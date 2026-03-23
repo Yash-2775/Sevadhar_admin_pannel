@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sevadhar — Admin Panel</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+
+    <div class="login-logo">
+      <div class="login-logo-icon">S</div>
+      <div class="login-logo-text">Seva<span>dhar</span></div>
+    </div>
+
+    <div class="login-title">Welcome back 👋</div>
+    <p class="login-sub">Sign in to your admin dashboard</p>
+
+    <div class="form-group">
+      <label class="form-label">Email or Phone</label>
+      <input class="form-input" id="login-id" type="text"
+             placeholder="admin@sevadhar.in or 9876543210"
+             value="admin@sevadhar.in">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" id="login-pw" type="password"
+             placeholder="Enter your password"
+             value="admin123">
+    </div>
+
+    <button class="btn-primary" onclick="doLogin()">Sign In to Dashboard</button>
+
+    <div class="login-error" id="login-error">
+      ⚠ Invalid credentials. Try admin@sevadhar.in / admin123
+    </div>
+
+    <p style="font-size:12px;color:var(--text-muted);margin-top:20px;text-align:center;">
+      Demo: admin@sevadhar.in · admin123
+    </p>
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     MAIN APPLICATION
+════════════════════════════════════════ -->
+<div id="app" style="display:none;">
+
+  <!-- ── SIDEBAR ───────────────────────── -->
+  <nav class="sidebar">
+
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">S</div>
+      <div class="sidebar-logo-text">Seva<span>dhar</span></div>
+    </div>
+
+    <div class="sidebar-nav">
+
+      <div class="nav-section-label">Overview</div>
+
+      <div class="nav-item active" onclick="showPage('dashboard', this)">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('notifications', this)">
+        <span class="nav-icon">🔔</span> Notifications
+        <span class="nav-badge">5</span>
+      </div>
+
+      <div class="nav-section-label">Workers</div>
+
+      <div class="nav-item" onclick="showPage('verification', this)">
+        <span class="nav-icon">✅</span> Worker Verification
+        <span class="nav-badge">8</span>
+      </div>
+      <div class="nav-item" onclick="showPage('profile-approvals', this)">
+        <span class="nav-icon">📝</span> Profile Update Approvals
+        <span class="nav-badge">3</span>
+      </div>
+      <div class="nav-item" onclick="showPage('users', this)">
+        <span class="nav-icon">👥</span> Manage Users
+      </div>
+
+      <div class="nav-section-label">Finance</div>
+
+      <div class="nav-item" onclick="showPage('seva-coins', this)">
+        <span class="nav-icon">🪙</span> Seva Coins
+        <span class="nav-badge">6</span>
+      </div>
+      <div class="nav-item" onclick="showPage('analytics', this)">
+        <span class="nav-icon">📈</span> Analytics
+      </div>
+
+      <div class="nav-section-label">System</div>
+
+      <div class="nav-item" onclick="showPage('settings', this)">
+        <span class="nav-icon">⚙️</span> Settings
+      </div>
+
+    </div><!-- /sidebar-nav -->
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="doLogout()">
+        <div class="sidebar-avatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Admin User</div>
+          <div class="sidebar-user-role">Super Admin · Sign out</div>
+        </div>
+      </div>
+    </div>
+
+  </nav><!-- /sidebar -->
+
+
+  <!-- ── MAIN CONTENT AREA ─────────────── -->
+  <div class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="topbar-title" id="page-title">Dashboard</div>
+      <div class="topbar-actions">
+
+        <div class="topbar-search">
+          <span>🔍</span>
+          <input type="text" placeholder="Search by phone number…"
+                 id="global-search" oninput="globalSearch(this.value)">
+        </div>
+
+        <div class="icon-btn"
+             onclick="showPage('notifications', document.querySelector('[onclick*=notifications]'))">
+          🔔
+          <span class="badge">5</span>
+        </div>
+
+        <div class="icon-btn"
+             onclick="showPage('settings', document.querySelector('[onclick*=settings]'))">
+          ⚙️
+        </div>
+
+      </div>
+    </div><!-- /topbar -->
+
+
+    <!-- ══════════════════════════════════
+         PAGE: DASHBOARD
+    ══════════════════════════════════ -->
+    <div class="page active" id="page-dashboard">
+
+      <!-- Stat Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon orange">👥</div>
+            <span class="stat-delta up">+12%</span>
+          </div>
+          <div class="stat-value">1,284</div>
+          <div class="stat-label">Total Registered Workers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon yellow">⏳</div>
+            <span class="stat-delta up">+8</span>
+          </div>
+          <div class="stat-value">11</div>
+          <div class="stat-label">Pending Approvals</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon green">🪙</div>
+            <span class="stat-delta up">+24%</span>
+          </div>
+          <div class="stat-value">₹48,200</div>
+          <div class="stat-label">Total Withdrawals This Month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon blue">🌟</div>
+            <span class="stat-delta up">+3%</span>
+          </div>
+          <div class="stat-value">4.8</div>
+          <div class="stat-label">Avg. Worker Rating</div>
+        </div>
+      </div>
+
+      <!-- Two-column section -->
+      <div class="grid-2">
+
+        <!-- Recent Registrations -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Worker Registrations</span>
+            <button class="btn btn-ghost btn-sm"
+              onclick="showPage('verification', document.querySelector('[onclick*=verification]'))">
+              View all →
+            </button>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Worker</th><th>Service</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar">R</div>
+                    <div>
+                      <div class="user-name">Ravi Kumar</div>
+                      <div class="user-phone">+91 9876501234</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🧹 Cleaning</td>
+                <td><span class="badge badge-pending">Pending</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar">P</div>
+                    <div>
+                      <div class="user-name">Priya Devi</div>
+                      <div class="user-phone">+91 9845612345</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🔧 Plumbing</td>
+                <td><span class="badge badge-approved">Approved</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar">M</div>
+                    <div>
+                      <div class="user-name">Mohan Singh</div>
+                      <div class="user-phone">+91 9712345678</div>
+                    </div>
+                  </div>
+                </td>
+                <td>⚡ Electrical</td>
+                <td><span class="badge badge-pending">Pending</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar">S</div>
+                    <div>
+                      <div class="user-name">Sunita Rao</div>
+                      <div class="user-phone">+91 9988776655</div>
+                    </div>
+                  </div>
+                </td>
+                <td>👶 Childcare</td>
+                <td><span class="badge badge-rejected">Rejected</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Activity</span>
+          </div>
+          <div style="padding:16px 20px;">
+            <div class="activity-item">
+              <div class="activity-icon" style="background:var(--green-pale)">✅</div>
+              <div>
+                <div class="activity-text"><strong>Anjali Mehta</strong> was approved as a Cook</div>
+                <div class="activity-time">2 min ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:var(--yellow-pale)">🪙</div>
+              <div>
+                <div class="activity-text">Withdrawal of <strong>₹850</strong> approved for Ramesh K.</div>
+                <div class="activity-time">15 min ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:var(--blue-pale)">📝</div>
+              <div>
+                <div class="activity-text">Profile update pending for <strong>Suresh Gupta</strong></div>
+                <div class="activity-time">42 min ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:var(--red-pale)">🚫</div>
+              <div>
+                <div class="activity-text"><strong>Vikram Sharma</strong> registration rejected (docs issue)</div>
+                <div class="activity-time">1 hr ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:var(--orange-pale)">👤</div>
+              <div>
+                <div class="activity-text">New registration from <strong>Kavitha Nair</strong> (Cooking)</div>
+                <div class="activity-time">2 hrs ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /grid-2 -->
+
+      <!-- Registration Chart -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Worker Registrations — Last 8 Months</span>
+        </div>
+        <div class="chart-area" id="chart"></div>
+        <div style="display:flex;gap:8px;padding:0 20px 16px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:var(--text-muted)">Jan</span>
+          <span style="font-size:11px;color:var(--text-muted);flex:1;text-align:center">Feb</span>
+          <span style="font-size:11px;color:var(--text-muted);flex:1;text-align:center">Mar</span>
+          <span style="font-size:11px;color:var(--text-muted);flex:1;text-align:center">Apr</span>
+          <span style="font-size:11px;color:var(--text-muted);flex:1;text-align:center">May</span>
+          <span style="font-size:11px;color:var(--text-muted);flex:1;text-align:center">Jun</span>
+          <span style="font-size:11px;color:var(--text-muted);flex:1;text-align:center">Jul</span>
+          <span style="font-size:11px;color:var(--text-muted)">Aug</span>
+        </div>
+      </div>
+
+    </div><!-- /page-dashboard -->
+
+
+    <!-- ══════════════════════════════════
+         PAGE: WORKER VERIFICATION
+    ══════════════════════════════════ -->
+    <div class="page" id="page-verification">
+
+      <div class="section-header">
+        <div>
+          <div class="section-title">Worker Verification</div>
+          <div class="section-sub">Review and approve new service provider registrations</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <select class="filter-select" id="verif-filter" onchange="filterTable()">
+            <option value="">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="filter-bar">
+          <input class="filter-input" type="text"
+                 placeholder="Search by name or phone…"
+                 oninput="filterWorkers(this.value)">
+          <select class="filter-select" onchange="filterWorkersByService(this.value)">
+            <option value="">All Services</option>
+            <option>Cleaning</option>
+            <option>Plumbing</option>
+            <option>Electrical</option>
+            <option>Cooking</option>
+            <option>Childcare</option>
+            <option>Carpentry</option>
+            <option>Painting</option>
+            <option>AC Repair</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table id="verification-table">
+            <thead>
+              <tr>
+                <th>Worker</th>
+                <th>Services</th>
+                <th>OTP</th>
+                <th>Aadhaar</th>
+                <th>Applied</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="verification-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /page-verification -->
+
+
+    <!-- ══════════════════════════════════
+         PAGE: PROFILE APPROVALS
+    ══════════════════════════════════ -->
+    <div class="page" id="page-profile-approvals">
+
+      <div class="section-header">
+        <div>
+          <div class="section-title">Profile Update Approvals</div>
+          <div class="section-sub">Changes made by workers go live only after admin review</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Worker</th>
+                <th>Field Changed</th>
+                <th>Old Value</th>
+                <th>New Value</th>
+                <th>Requested</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="profile-approval-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /page-profile-approvals -->
+
+
+    <!-- ══════════════════════════════════
+         PAGE: MANAGE USERS
+    ══════════════════════════════════ -->
+    <div class="page" id="page-users">
+
+      <div class="section-header">
+        <div>
+          <div class="section-title">Manage Users</div>
+          <div class="section-sub">Search, edit, deactivate or delete service provider accounts</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="filter-bar">
+          <input class="filter-input" type="text"
+                 placeholder="Search by phone number (login ID)…"
+                 oninput="searchUsers(this.value)"
+                 id="user-search">
+          <select class="filter-select" onchange="filterUsersByStatus(this.value)">
+            <option value="">All</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Worker</th>
+                <th>Services</th>
+                <th>Joined</th>
+                <th>Status</th>
+                <th>Coins</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /page-users -->
+
+
+    <!-- ══════════════════════════════════
+         PAGE: SEVA COINS
+    ══════════════════════════════════ -->
+    <div class="page" id="page-seva-coins">
+
+      <div class="section-header">
+        <div>
+          <div class="section-title">Seva Coins — Withdrawal Requests</div>
+          <div class="section-sub">Approve UPI payouts after manual verification</div>
+        </div>
+      </div>
+
+      <!-- Summary Stats -->
+      <div class="grid-3">
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon yellow">⏳</div></div>
+          <div class="stat-value">6</div>
+          <div class="stat-label">Pending Requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon green">✅</div></div>
+          <div class="stat-value">₹1,24,500</div>
+          <div class="stat-label">Total Paid Out</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon orange">🪙</div></div>
+          <div class="stat-value">₹18,300</div>
+          <div class="stat-label">Pending Amount</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">All Withdrawal Requests</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Worker</th>
+                <th>Coins Earned</th>
+                <th>Amount</th>
+                <th>UPI ID</th>
+                <th>Requested</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="coins-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /page-seva-coins -->
+
+
+    <!-- ══════════════════════════════════
+         PAGE: ANALYTICS
+    ══════════════════════════════════ -->
+    <div class="page" id="page-analytics">
+
+      <div class="section-title" style="margin-bottom:4px">Analytics</div>
+      <div class="section-sub" style="margin-bottom:16px">Platform performance overview</div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon orange">👷</div><span class="stat-delta up">+18%</span></div>
+          <div class="stat-value">1,284</div>
+          <div class="stat-label">Total Workers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon green">✅</div><span class="stat-delta up">+22%</span></div>
+          <div class="stat-value">956</div>
+          <div class="stat-label">Approved Workers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon blue">📋</div><span class="stat-delta up">+11%</span></div>
+          <div class="stat-value">5,820</div>
+          <div class="stat-label">Total Bookings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon yellow">💰</div><span class="stat-delta up">+31%</span></div>
+          <div class="stat-value">₹4.8L</div>
+          <div class="stat-label">Revenue (MoM)</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Service Category Breakdown</span></div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:12px;" id="service-breakdown"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Approval Rate</span></div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:12px;" id="approval-stats"></div>
+        </div>
+      </div>
+
+    </div><!-- /page-analytics -->
+
+
+    <!-- ══════════════════════════════════
+         PAGE: NOTIFICATIONS
+    ══════════════════════════════════ -->
+    <div class="page" id="page-notifications">
+
+      <div class="section-header" style="margin-bottom:4px">
+        <div class="section-title">Notifications</div>
+        <button class="btn btn-ghost btn-sm">Mark all read</button>
+      </div>
+
+      <div class="card">
+        <div class="notif-list" id="notif-list" style="padding:8px;"></div>
+      </div>
+
+    </div><!-- /page-notifications -->
+
+
+    <!-- ══════════════════════════════════
+         PAGE: SETTINGS
+    ══════════════════════════════════ -->
+    <div class="page" id="page-settings">
+
+      <div class="section-title" style="margin-bottom:16px">Settings</div>
+
+      <div class="grid-2">
+
+        <!-- Admin Profile -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Admin Profile</span></div>
+          <div style="padding:22px;display:flex;flex-direction:column;gap:14px;">
+            <div class="form-group">
+              <label class="form-label">Admin Name</label>
+              <input class="form-input" value="Super Admin">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input class="form-input" value="admin@sevadhar.in">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input class="form-input" value="+91 9999999999">
+            </div>
+            <button class="btn btn-orange"
+              onclick="showToast('Profile saved successfully', 'success')">
+              Save Changes
+            </button>
+          </div>
+        </div>
+
+        <!-- API Configuration -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">API Configuration</span></div>
+          <div style="padding:22px;display:flex;flex-direction:column;gap:14px;">
+            <div class="form-group">
+              <label class="form-label">Backend Base URL</label>
+              <input class="form-input" value="https://api.sevadhar.in/v1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">API Key</label>
+              <input class="form-input" type="password" value="sk_live_sevadhar_xxxxxxxxxxxx">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Webhook Secret</label>
+              <input class="form-input" type="password" value="whsec_xxxxxxxx">
+            </div>
+            <button class="btn btn-orange"
+              onclick="showToast('API settings saved', 'success')">
+              Update API Settings
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-settings -->
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+
+<!-- ════════════════════════════════════════
+     MODAL: WORKER DETAIL
+════════════════════════════════════════ -->
+<div class="modal-overlay" id="worker-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-worker-name">Worker Profile</div>
+      <button class="modal-close" onclick="closeModal('worker-modal')">✕</button>
+    </div>
+    <div class="modal-body"   id="modal-worker-body"></div>
+    <div class="modal-footer" id="modal-worker-footer"></div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     MODAL: SEVA COINS DETAIL
+════════════════════════════════════════ -->
+<div class="modal-overlay" id="coins-modal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title">Withdrawal Request</div>
+      <button class="modal-close" onclick="closeModal('coins-modal')">✕</button>
+    </div>
+    <div class="modal-body"   id="coins-modal-body"></div>
+    <div class="modal-footer" id="coins-modal-footer"></div>
+  </div>
+</div>
+
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+
+<!-- JavaScript -->
+<script src="script.js"></script>
+
+</body>
+</html>
