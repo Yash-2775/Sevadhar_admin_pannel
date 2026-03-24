@@ -22,7 +22,7 @@ const WORKERS = [
 const PROFILE_UPDATES = [
   { id:1, workerId:2, workerName:'Priya Devi',   phone:'+91 9845612345', field:'Added Service', oldVal:'Plumbing',    newVal:'Plumbing, AC Repair',  date:'2025-03-20', status:'Pending'  },
   { id:2, workerId:5, workerName:'Anjali Mehta', phone:'+91 9512345678', field:'City',          oldVal:'Thane',       newVal:'Mumbai',               date:'2025-03-19', status:'Pending'  },
-  { id:3, workerId:8, workerName:'Ramesh Kumar', phone:'+91 9811234567', field:'Profile Photo', oldVal:'Old Photo',   newVal:'New Photo uploaded',   date:'2025-03-18', status:'Pending'  },
+  { id:3, workerId:8, workerName:'Ramesh Kumar', phone:'+91 9811234567', field:'Profile Photo', oldVal:'Old Photo', oldPhoto:'https://via.placeholder.com/160?text=Old+Photo', newVal:'New Photo uploaded', newPhoto:'https://via.placeholder.com/160?text=New+Photo', date:'2025-03-18', status:'Pending'  },
   { id:4, workerId:2, workerName:'Priya Devi',   phone:'+91 9845612345', field:'Bio',           oldVal:'—',           newVal:'10 yrs experience…',   date:'2025-03-15', status:'Approved' },
 ];
 
@@ -194,8 +194,28 @@ function renderProfileApprovals() {
         </div>
       </td>
       <td><strong>${p.field}</strong></td>
-      <td style="color:var(--text-muted);max-width:140px;font-size:12px">${p.oldVal}</td>
-      <td style="color:var(--orange);font-weight:600;max-width:160px;font-size:12px">${p.newVal}</td>
+      <td style="color:var(--text-muted);max-width:140px;font-size:12px">
+        ${p.field === 'Profile Photo'
+          ? `
+            <div style="display:flex;align-items:center;gap:8px">
+              <img src="${p.oldPhoto || 'https://via.placeholder.com/44x44?text=Old'}" alt="Old photo" style="border-radius:6px;width:44px;height:44px;object-fit:cover"/>
+              <button class="btn btn-ghost btn-xs" onclick="viewProfilePhoto('old', ${p.id})">View Old</button>
+            </div>
+          `
+          : p.oldVal
+        }
+      </td>
+      <td style="color:var(--orange);font-weight:600;max-width:160px;font-size:12px">
+        ${p.field === 'Profile Photo'
+          ? `
+            <div style="display:flex;align-items:center;gap:8px">
+              <img src="${p.newPhoto || 'https://via.placeholder.com/44x44?text=New'}" alt="New photo" style="border-radius:6px;width:44px;height:44px;object-fit:cover"/>
+              <button class="btn btn-ghost btn-xs" onclick="viewProfilePhoto('new', ${p.id})">View New</button>
+            </div>
+          `
+          : p.newVal
+        }
+      </td>
       <td style="color:var(--text-muted);font-size:12px">${p.date}</td>
       <td>${statusBadge(p.status)}</td>
       <td>
@@ -208,6 +228,29 @@ function renderProfileApprovals() {
       </td>
     </tr>
   `).join('');
+}
+
+function viewProfilePhoto(type, approvalId) {
+  const approval = profileData.find(p => p.id === approvalId);
+  if (!approval) return;
+
+  const imageUrl = type === 'old'
+    ? (approval.oldPhoto || 'https://via.placeholder.com/240?text=Old+Photo')
+    : (approval.newPhoto || 'https://via.placeholder.com/240?text=New+Photo');
+
+  const title = type === 'old' ? 'Old Photo Preview' : 'New Photo Preview';
+
+  const photoModal = document.getElementById('photo-modal');
+  if (!photoModal) return;
+
+  photoModal.querySelector('.modal-title').textContent = `${title} — ${approval.workerName}`;
+  photoModal.querySelector('.modal-body').innerHTML = `
+    <div style="text-align:center">
+      <img src="${imageUrl}" alt="${title}" style="max-width:100%;max-height:360px;border-radius:10px;" />
+      <div style="margin-top:10px;color:var(--text-secondary)">${approval.field}</div>
+    </div>
+  `;
+  openModal('photo-modal');
 }
 
 /* ─────────────────────────────────────────
