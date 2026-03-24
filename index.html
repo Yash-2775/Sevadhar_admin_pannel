@@ -75,11 +75,7 @@
       <div class="nav-item active" onclick="showPage('dashboard', this)">
         <span class="nav-icon">📊</span> Dashboard
       </div>
-      <div class="nav-item" onclick="showPage('notifications', this)">
-        <span class="nav-icon">🔔</span> Notifications
-        <span class="nav-badge">5</span>
-      </div>
-
+      <!-- Notifications removed from sidebar (top-right only) -->
       <div class="nav-section-label">Workers</div>
 
       <div class="nav-item" onclick="showPage('verification', this)">
@@ -140,9 +136,9 @@
         </div>
 
         <div class="icon-btn"
-             onclick="showPage('notifications', document.querySelector('[onclick*=notifications]'))">
+             onclick="showPage('notifications', null)">
           🔔
-          <span class="badge">5</span>
+          <span id="notif-badge" class="badge">0</span>
         </div>
 
         <div class="icon-btn"
@@ -185,14 +181,14 @@
           <div class="stat-value">₹48,200</div>
           <div class="stat-label">Total Withdrawals This Month</div>
         </div>
-        <div class="stat-card">
+        <!-- <div class="stat-card">
           <div class="stat-header">
             <div class="stat-icon blue">🌟</div>
             <span class="stat-delta up">+3%</span>
           </div>
           <div class="stat-value">4.8</div>
           <div class="stat-label">Avg. Worker Rating</div>
-        </div>
+        </div> -->
       </div>
 
       <!-- Two-column section -->
@@ -374,17 +370,15 @@
         </div>
         <div class="table-wrap">
           <table id="verification-table">
-            <thead>
               <tr>
                 <th>Worker</th>
                 <th>Services</th>
-                <th>OTP</th>
+                <!-- <th>OTP</th> -->
                 <th>Aadhaar</th>
                 <th>Applied</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
-            </thead>
             <tbody id="verification-tbody"></tbody>
           </table>
         </div>
@@ -449,6 +443,11 @@
             <option value="">All</option>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
+          </select>
+          <select class="filter-select" onchange="sortUsersByJoined(this.value)">
+            <option value="">Sort by Joined</option>
+            <option value="asc">Joined: Oldest First</option>
+            <option value="desc">Joined: Newest First</option>
           </select>
         </div>
         <div class="table-wrap">
@@ -539,12 +538,12 @@
         <div class="stat-card">
           <div class="stat-header"><div class="stat-icon orange">👷</div><span class="stat-delta up">+18%</span></div>
           <div class="stat-value">1,284</div>
-          <div class="stat-label">Total Workers</div>
+          <div class="stat-label">Total Service Providers</div>
         </div>
         <div class="stat-card">
           <div class="stat-header"><div class="stat-icon green">✅</div><span class="stat-delta up">+22%</span></div>
           <div class="stat-value">956</div>
-          <div class="stat-label">Approved Workers</div>
+          <div class="stat-label">Total Service Receivers</div>
         </div>
         <div class="stat-card">
           <div class="stat-header"><div class="stat-icon blue">📋</div><span class="stat-delta up">+11%</span></div>

@@ -37,14 +37,14 @@ const COINS_REQUESTS = [
 ];
 
 const NOTIFICATIONS = [
-  { id:1, text:'New worker registration from Kavitha Nair (Cooking, Cleaning)',          time:'5 min ago',  unread:true  },
-  { id:2, text:'Deepa Sharma submitted Aadhaar documents for verification',              time:'18 min ago', unread:true  },
-  { id:3, text:'Withdrawal request of ₹600 from Priya Devi — UPI pending',              time:'1 hr ago',   unread:true  },
-  { id:4, text:'Profile update request from Anjali Mehta — city change',                time:'2 hrs ago',  unread:true  },
-  { id:5, text:'Suresh Gupta completed OTP verification for registration',               time:'3 hrs ago',  unread:true  },
-  { id:6, text:'Ramesh Kumar\'s withdrawal of ₹850 was approved',                       time:'5 hrs ago',  unread:false },
-  { id:7, text:'Monthly analytics report for March 2025 is ready',                      time:'Yesterday',  unread:false },
-  { id:8, text:'API sync completed successfully — 1,284 workers synced',                time:'Yesterday',  unread:false },
+  { id:1, type:'profile', workerId:7, text:'New worker registration from Kavitha Nair (Cooking, Cleaning)',          time:'5 min ago',  unread:true  },
+  { id:2, type:'comment', workerId:9, commentId:101, text:'Deepa Sharma commented on your post: "Great profile!"',              time:'18 min ago', unread:true  },
+  { id:3, type:'profile', workerId:2, text:'Withdrawal request of ₹600 from Priya Devi — UPI pending',              time:'1 hr ago',   unread:true  },
+  { id:4, type:'profile', workerId:5, text:'Profile update request from Anjali Mehta — city change',                time:'2 hrs ago',  unread:true  },
+  { id:5, type:'comment', workerId:6, commentId:102, text:'Suresh Gupta commented: "Can you share your ID proof?"',               time:'3 hrs ago',  unread:true  },
+  { id:6, type:'profile', workerId:8, text:'Ramesh Kumar\'s withdrawal of ₹850 was approved',                       time:'5 hrs ago',  unread:false },
+  { id:7, type:'profile', workerId:null, text:'Monthly analytics report for March 2025 is ready',                      time:'Yesterday',  unread:false },
+  { id:8, type:'profile', workerId:null, text:'API sync completed successfully — 1,284 workers synced',                time:'Yesterday',  unread:false },
 ];
 
 /* ─────────────────────────────────────────
@@ -53,6 +53,7 @@ const NOTIFICATIONS = [
 let workerData  = [...WORKERS];
 let profileData = [...PROFILE_UPDATES];
 let coinsData   = [...COINS_REQUESTS];
+let userSortOrder = ''; // 'asc' or 'desc' for joined date
 
 /* ─────────────────────────────────────────
    AUTHENTICATION
@@ -138,7 +139,7 @@ function statusBadge(status) {
 function renderVerification(data) {
   const tbody = document.getElementById('verification-tbody');
   if (!data.length) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No workers found</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No workers found</div></div></td></tr>`;
     return;
   }
 
@@ -154,9 +155,9 @@ function renderVerification(data) {
         </div>
       </td>
       <td>${w.services.map(s => `<span class="service-tag">${s}</span>`).join('')}</td>
-      <td>${w.otp
+      <!-- <td>${w.otp
         ? '<span style="color:var(--green);font-size:18px">✓</span>'
-        : '<span style="color:var(--red);font-size:18px">✗</span>'}</td>
+        : '<span style="color:var(--red);font-size:18px">✗</span>'}</td> -->
       <td><button class="btn btn-ghost btn-sm" onclick="viewDocs(${w.id})">View Docs 📄</button></td>
       <td style="color:var(--text-muted);font-size:12px">${w.date}</td>
       <td>${statusBadge(w.status)}</td>
@@ -214,9 +215,28 @@ function renderProfileApprovals() {
 ───────────────────────────────────────── */
 
 function renderUsers(data) {
+  // Apply sorting if set
+  let sortedData = [...data];
+  if (userSortOrder) {
+    sortedData.sort((a, b) => {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const aParts = a.joined.split(' ');
+      const bParts = b.joined.split(' ');
+      const aMonth = months.indexOf(aParts[0]);
+      const bMonth = months.indexOf(bParts[0]);
+      const aYear = parseInt(aParts[1]);
+      const bYear = parseInt(bParts[1]);
+      
+      let cmp = aYear - bYear;
+      if (cmp === 0) cmp = aMonth - bMonth;
+      
+      return userSortOrder === 'asc' ? cmp : -cmp;
+    });
+  }
+
   const tbody = document.getElementById('users-tbody');
 
-  tbody.innerHTML = data.map(w => {
+  tbody.innerHTML = sortedData.map(w => {
     const displayStatus = w.status === 'Approved' ? 'Active' : 'Inactive';
     return `
       <tr>
@@ -295,7 +315,7 @@ function renderNotifications() {
   const list = document.getElementById('notif-list');
 
   list.innerHTML = NOTIFICATIONS.map(n => `
-    <div class="notif-item ${n.unread ? 'unread' : ''}">
+    <div class="notif-item ${n.unread ? 'unread' : ''}" onclick="handleNotificationClick(${n.id})">
       <div class="notif-dot ${n.unread ? '' : 'read'}"></div>
       <div class="notif-content">
         <div class="notif-text">${n.text}</div>
@@ -303,6 +323,46 @@ function renderNotifications() {
       </div>
     </div>
   `).join('');
+
+  updateNotificationBadge();
+}
+
+function updateNotificationBadge() {
+  const badge = document.getElementById('notif-badge');
+  if (!badge) return;
+  const unreadCount = NOTIFICATIONS.filter(n => n.unread).length;
+  badge.textContent = unreadCount;
+  badge.style.display = unreadCount ? 'inline-flex' : 'none';
+}
+
+function handleNotificationClick(id) {
+  const notif = NOTIFICATIONS.find(n => n.id === id);
+  if (!notif) return;
+
+  // Mark as read/update counts
+  if (notif.unread) {
+    notif.unread = false;
+    updateNotificationBadge();
+  }
+
+  // Navigate based on type
+  if (notif.type === 'comment') {
+    showPage('verification', document.querySelector('[onclick*=verification]'));
+    openWorkerModal(notif.workerId);
+    // Add comment context if needed
+    const modalBody = document.getElementById('modal-worker-body');
+    if (modalBody) {
+      const commentHtml = `<div style="margin-top:14px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--gray-light)"><strong>Comment:</strong> ${notif.text}</div>`;
+      modalBody.insertAdjacentHTML('beforeend', commentHtml);
+    }
+  } else if (notif.type === 'profile') {
+    showPage('users', document.querySelector('[onclick*=users]'));
+    if (notif.workerId) {
+      openWorkerModal(notif.workerId);
+    }
+  } else {
+    showPage('notifications', document.querySelector('[onclick*=notifications]'));
+  }
 }
 
 /* ─────────────────────────────────────────
@@ -390,7 +450,7 @@ function openWorkerModal(id) {
       <div class="profile-field"><div class="profile-label">Phone (Login ID)</div>  <div class="profile-value">${w.phone}</div></div>
       <div class="profile-field"><div class="profile-label">City</div>              <div class="profile-value">${w.city}</div></div>
       <div class="profile-field"><div class="profile-label">Joined</div>            <div class="profile-value">${w.joined}</div></div>
-      <div class="profile-field"><div class="profile-label">OTP Verified</div>      <div class="profile-value">${w.otp ? '✅ Yes' : '❌ No'}</div></div>
+      <!-- <div class="profile-field"><div class="profile-label">OTP Verified</div>      <div class="profile-value">${w.otp ? '✅ Yes' : '❌ No'}</div></div> -->
       <div class="profile-field"><div class="profile-label">Rating</div>            <div class="profile-value">${w.rating ? '⭐ ' + w.rating : '—'}</div></div>
       <div class="profile-field"><div class="profile-label">Seva Coins</div>        <div class="profile-value">🪙 ${w.coins}</div></div>
       <div class="profile-field"><div class="profile-label">Status</div>            <div class="profile-value">${statusBadge(w.status)}</div></div>
@@ -539,33 +599,80 @@ function deleteUser(id) {
 
 /** Filter verification table by name or phone. */
 function filterWorkers(query) {
-  const q = query.toLowerCase();
-  renderVerification(WORKERS.filter(w =>
-    w.name.toLowerCase().includes(q) || w.phone.includes(q)
-  ));
+  applyVerificationFilters();
 }
 
 /** Filter verification table by service category. */
 function filterWorkersByService(service) {
-  renderVerification(service
-    ? WORKERS.filter(w => w.services.includes(service))
-    : WORKERS
-  );
+  applyVerificationFilters();
+}
+
+/** Filter verification table by status. */
+function filterTable() {
+  applyVerificationFilters();
+}
+
+/** Apply all active filters to verification table. */
+function applyVerificationFilters() {
+  const searchQuery = document.querySelector('#page-verification .filter-input').value.toLowerCase();
+  const serviceFilter = document.querySelector('#page-verification select[onchange*="filterWorkersByService"]').value;
+  const statusFilter = document.getElementById('verif-filter').value;
+
+  let filtered = WORKERS;
+
+  if (searchQuery) {
+    filtered = filtered.filter(w =>
+      w.name.toLowerCase().includes(searchQuery) || w.phone.includes(searchQuery)
+    );
+  }
+
+  if (serviceFilter) {
+    filtered = filtered.filter(w => w.services.includes(serviceFilter));
+  }
+
+  if (statusFilter) {
+    filtered = filtered.filter(w => w.status === statusFilter);
+  }
+
+  renderVerification(filtered);
 }
 
 /** Search users by phone or name (phone is the login ID). */
 function searchUsers(query) {
   const q = query.toLowerCase();
-  renderUsers(WORKERS.filter(w =>
+  const filtered = WORKERS.filter(w =>
     w.name.toLowerCase().includes(q) || w.phone.includes(q)
-  ));
+  );
+  renderUsers(filtered);
 }
 
 /** Filter users table by Active / Inactive status. */
 function filterUsersByStatus(status) {
-  if (!status) { renderUsers(WORKERS); return; }
-  const map = { Active: ['Approved'], Inactive: ['Rejected', 'Pending'] };
-  renderUsers(WORKERS.filter(w => map[status].includes(w.status)));
+  let filtered = WORKERS;
+  if (status) {
+    const map = { Active: ['Approved'], Inactive: ['Rejected', 'Pending'] };
+    filtered = WORKERS.filter(w => map[status].includes(w.status));
+  }
+  renderUsers(filtered);
+}
+
+/** Sort users table by joined date. */
+function sortUsersByJoined(order) {
+  userSortOrder = order;
+  // Re-apply current filters
+  const statusFilter = document.querySelector('#page-users select[onchange*="filterUsersByStatus"]').value;
+  const searchQuery = document.getElementById('user-search').value;
+  
+  let data = WORKERS;
+  if (statusFilter) {
+    const map = { Active: ['Approved'], Inactive: ['Rejected', 'Pending'] };
+    data = data.filter(w => map[statusFilter].includes(w.status));
+  }
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    data = data.filter(w => w.phone.includes(q) || w.name.toLowerCase().includes(q));
+  }
+  renderUsers(data);
 }
 
 /**
