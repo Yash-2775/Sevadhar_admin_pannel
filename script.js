@@ -27,13 +27,13 @@ const PROFILE_UPDATES = [
 ];
 
 const COINS_REQUESTS = [
-  { id:1, workerId:2, name:'Priya Devi',   phone:'+91 9845612345', coins:1200, amount:600,  upi:'priya.devi@okaxis',  date:'2025-03-21', status:'Pending'  },
-  { id:2, workerId:5, name:'Anjali Mehta', phone:'+91 9512345678', coins:3000, amount:1500, upi:'anjali.mehta@oksbi', date:'2025-03-20', status:'Pending'  },
-  { id:3, workerId:8, name:'Ramesh Kumar', phone:'+91 9811234567', coins:1700, amount:850,  upi:'ramesh.k@okhdfc',    date:'2025-03-19', status:'Approved' },
-  { id:4, workerId:5, name:'Anjali Mehta', phone:'+91 9512345678', coins:200,  amount:100,  upi:'anjali.mehta@oksbi', date:'2025-03-15', status:'Approved' },
-  { id:5, workerId:8, name:'Ramesh Kumar', phone:'+91 9811234567', coins:800,  amount:400,  upi:'ramesh.k@okhdfc',    date:'2025-03-10', status:'Rejected' },
-  { id:6, workerId:2, name:'Priya Devi',   phone:'+91 9845612345', coins:500,  amount:250,  upi:'priya.devi@okaxis',  date:'2025-03-22', status:'Pending'  },
-  { id:7, workerId:5, name:'Kavitha Nair', phone:'+91 9965432100', coins:400,  amount:200,  upi:'kavitha.n@ybl',      date:'2025-03-21', status:'Pending'  },
+  { id:1, workerId:2, name:'Priya Devi',   phone:'+91 9845612345', coins:1200, amount:600,  upi:'priya.devi@okaxis',  date:'2025-03-21', requestedAt:'2025-03-21T09:30:00', status:'Pending'  },
+  { id:2, workerId:5, name:'Anjali Mehta', phone:'+91 9512345678', coins:3000, amount:1500, upi:'anjali.mehta@oksbi', date:'2025-03-20', requestedAt:'2025-03-20T14:45:00', status:'Pending'  },
+  { id:3, workerId:8, name:'Ramesh Kumar', phone:'+91 9811234567', coins:1700, amount:850,  upi:'ramesh.k@okhdfc',    date:'2025-03-19', requestedAt:'2025-03-19T11:15:00', status:'Approved' },
+  { id:4, workerId:5, name:'Anjali Mehta', phone:'+91 9512345678', coins:200,  amount:100,  upi:'anjali.mehta@oksbi', date:'2025-03-15', requestedAt:'2025-03-15T16:05:00', status:'Approved' },
+  { id:5, workerId:8, name:'Ramesh Kumar', phone:'+91 9811234567', coins:800,  amount:400,  upi:'ramesh.k@okhdfc',    date:'2025-03-10', requestedAt:'2025-03-10T08:20:00', status:'Rejected' },
+  { id:6, workerId:2, name:'Priya Devi',   phone:'+91 9845612345', coins:500,  amount:250,  upi:'priya.devi@okaxis',  date:'2025-03-22', requestedAt:'2025-03-22T10:10:00', status:'Pending'  },
+  { id:7, workerId:5, name:'Kavitha Nair', phone:'+91 9965432100', coins:400,  amount:200,  upi:'kavitha.n@ybl',      date:'2025-03-21', requestedAt:'2025-03-21T13:55:00', status:'Pending'  },
 ];
 
 const NOTIFICATIONS = [
@@ -132,6 +132,24 @@ function statusBadge(status) {
   return `<span class="badge ${map[status] || ''}">${status}</span>`;
 }
 
+/** Format date/time to 12-hour clock (e.g. "21 Mar 2025 03:30 PM") */
+function formatDateTime12hr(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return value;
+
+  const day   = String(date.getDate()).padStart(2, '0');
+  const month = date.toLocaleString('en-IN', { month: 'short' });
+  const year  = date.getFullYear();
+
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12;
+
+  return `${day} ${month} ${year} ${hours}:${minutes} ${ampm}`;
+}
+
 /* ─────────────────────────────────────────
    RENDER — WORKER VERIFICATION TABLE
 ───────────────────────────────────────── */
@@ -163,8 +181,6 @@ function renderVerification(data) {
       <td>${statusBadge(w.status)}</td>
       <td>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn btn-sm" style="background:var(--blue-pale);color:var(--blue);border:none"
-            onclick="openWorkerModal(${w.id})">View</button>
           ${w.status === 'Pending' ? `
             <button class="btn btn-green btn-sm" onclick="updateWorkerStatus(${w.id},'Approved')">Approve</button>
             <button class="btn btn-red   btn-sm" onclick="updateWorkerStatus(${w.id},'Rejected')">Reject</button>
@@ -320,7 +336,9 @@ function renderUsers(data) {
 function renderCoins() {
   const tbody = document.getElementById('coins-tbody');
 
-  tbody.innerHTML = coinsData.map(c => `
+  tbody.innerHTML = coinsData.map(c => {
+    const requested = formatDateTime12hr(c.requestedAt || c.date);
+    return `
     <tr>
       <td>
         <div class="user-cell">
@@ -334,20 +352,21 @@ function renderCoins() {
       <td><span class="coins-amount">${c.coins} 🪙</span></td>
       <td><strong>₹${c.amount}</strong></td>
       <td><span class="upi-id">${c.upi}</span></td>
-      <td style="color:var(--text-muted);font-size:12px">${c.date}</td>
+      <td style="color:var(--text-muted);font-size:12px">${requested}</td>
       <td>${statusBadge(c.status)}</td>
       <td>
         <div style="display:flex;gap:6px">
           ${c.status === 'Pending' ? `
             <button class="btn btn-green btn-sm" onclick="openCoinsModal(${c.id})">Approve</button>
-            <button class="btn btn-red   btn-sm" onclick="rejectCoins(${c.id})">Reject</button>
+            <button class="btn btn-red btn-sm" onclick="rejectCoins(${c.id})">Reject</button>
           ` : `
-            <button class="btn btn-ghost btn-sm" onclick="openCoinsModal(${c.id})">Details</button>
+            <button class="btn btn-orange btn-sm" onclick="openCoinsModal(${c.id})">Details</button>
           `}
         </div>
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 }
 
 /* ─────────────────────────────────────────
@@ -546,7 +565,7 @@ function openCoinsModal(id) {
       <div class="profile-field"><div class="profile-label">Worker Name</div><div class="profile-value">${c.name}</div></div>
       <div class="profile-field"><div class="profile-label">Phone</div>      <div class="profile-value">${c.phone}</div></div>
       <div class="profile-field"><div class="profile-label">UPI ID</div>     <div class="profile-value"><span class="upi-id">${c.upi}</span></div></div>
-      <div class="profile-field"><div class="profile-label">Requested</div>  <div class="profile-value">${c.date}</div></div>
+      <div class="profile-field"><div class="profile-label">Requested</div>  <div class="profile-value">${formatDateTime12hr(c.requestedAt || c.date)}</div></div>
       <div class="profile-field"><div class="profile-label">Status</div>     <div class="profile-value">${statusBadge(c.status)}</div></div>
     </div>
     ${c.status === 'Pending' ? `
@@ -716,23 +735,6 @@ function sortUsersByJoined(order) {
     data = data.filter(w => w.phone.includes(q) || w.name.toLowerCase().includes(q));
   }
   renderUsers(data);
-}
-
-/**
- * Global topbar search — routes to Manage Users page
- * and highlights matching results.
- */
-function globalSearch(query) {
-  if (query.length < 3) return;
-  const q = query.toLowerCase();
-  const found = WORKERS.filter(w =>
-    w.phone.includes(q) || w.name.toLowerCase().includes(q)
-  );
-  if (found.length) {
-    showPage('users', document.querySelector('[onclick*="users"]'));
-    renderUsers(found);
-    document.getElementById('user-search').value = query;
-  }
 }
 
 /* ─────────────────────────────────────────
