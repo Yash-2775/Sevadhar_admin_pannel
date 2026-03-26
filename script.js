@@ -466,7 +466,8 @@ function renderChart() {
 
   chart.innerHTML = vals.map(v => `
     <div class="chart-bar-wrap">
-      <div style="flex:1;display:flex;align-items:flex-end;width:100%">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;width:100%">
+        <div class="chart-bar-label" style="margin-bottom:4px;font-weight:600;">${v}</div>
         <div class="chart-bar"
           style="height:${(v / max) * 100}%;min-height:8px"
           title="${v} registrations"></div>
