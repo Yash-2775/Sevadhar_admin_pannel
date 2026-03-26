@@ -214,8 +214,7 @@ function renderProfileApprovals() {
         ${p.field === 'Profile Photo'
           ? `
             <div style="display:flex;align-items:center;gap:8px">
-              <img src="${p.oldPhoto || 'https://via.placeholder.com/44x44?text=Old'}" alt="Old photo" style="border-radius:6px;width:44px;height:44px;object-fit:cover"/>
-              <button class="btn btn-ghost btn-xs" onclick="viewProfilePhoto('old', ${p.id})">View Old</button>
+              <button class="btn btn-ghost btn-xs" onclick="viewProfilePhoto('old', ${p.id})">View Old Photo</button>
             </div>
           `
           : p.oldVal
@@ -225,8 +224,7 @@ function renderProfileApprovals() {
         ${p.field === 'Profile Photo'
           ? `
             <div style="display:flex;align-items:center;gap:8px">
-              <img src="${p.newPhoto || 'https://via.placeholder.com/44x44?text=New'}" alt="New photo" style="border-radius:6px;width:44px;height:44px;object-fit:cover"/>
-              <button class="btn btn-ghost btn-xs" onclick="viewProfilePhoto('new', ${p.id})">View New</button>
+              <button class="btn btn-ghost btn-xs" onclick="viewProfilePhoto('new', ${p.id})">View New Photo</button>
             </div>
           `
           : p.newVal
@@ -428,10 +426,10 @@ function handleNotificationClick(id) {
 }
 
 /* ─────────────────────────────────────────
-   RENDER — ANALYTICS
+   RENDER — SERVICE CATEGORY BREAKDOWN
 ───────────────────────────────────────── */
 
-function renderAnalytics() {
+function renderServiceBreakdown() {
   const services = [
     { name:'🧹 Cleaning',   count:342, pct:27 },
     { name:'🔧 Plumbing',   count:218, pct:17 },
@@ -452,25 +450,7 @@ function renderAnalytics() {
     </div>
   `).join('');
 
-  document.getElementById('approval-stats').innerHTML = `
-    <div style="display:flex;gap:16px;margin-bottom:16px">
-      <div style="flex:1;text-align:center;padding:16px;background:var(--green-pale);border-radius:12px">
-        <div style="font-size:28px;font-weight:700;color:var(--green)">74%</div>
-        <div style="font-size:13px;color:var(--text-secondary)">Approval Rate</div>
-      </div>
-      <div style="flex:1;text-align:center;padding:16px;background:var(--red-pale);border-radius:12px">
-        <div style="font-size:28px;font-weight:700;color:var(--red)">18%</div>
-        <div style="font-size:13px;color:var(--text-secondary)">Rejection Rate</div>
-      </div>
-      <div style="flex:1;text-align:center;padding:16px;background:var(--yellow-pale);border-radius:12px">
-        <div style="font-size:28px;font-weight:700;color:var(--yellow)">8%</div>
-        <div style="font-size:13px;color:var(--text-secondary)">Still Pending</div>
-      </div>
-    </div>
-    <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">Avg. review time: <strong>4.2 hrs</strong></div>
-    <div style="font-size:13px;color:var(--text-secondary)">Docs missing: <strong>12 cases</strong></div>
-    <div style="font-size:13px;color:var(--text-secondary);margin-top:8px">OTP failures: <strong>3 cases</strong></div>
-  `;
+
 }
 
 /* ─────────────────────────────────────────
@@ -775,7 +755,7 @@ function initApp() {
   renderUsers(WORKERS);
   renderCoins();
   renderNotifications();
-  renderAnalytics();
+  renderServiceBreakdown();
   setTimeout(renderChart, 100);
 
   // Close any modal when clicking outside it

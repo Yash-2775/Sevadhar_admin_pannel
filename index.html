@@ -96,9 +96,7 @@
         <span class="nav-icon">🪙</span> Seva Coins
         <span class="nav-badge">6</span>
       </div>
-      <div class="nav-item" onclick="showPage('analytics', this)">
-        <span class="nav-icon">📈</span> Analytics
-      </div>
+      
 
       <!-- <div class="nav-section-label">System</div> -->
 
@@ -144,14 +142,7 @@
 
       <!-- Stat Cards -->
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon orange">👥</div>
-            <span class="stat-delta up">+12%</span>
-          </div>
-          <div class="stat-value">1,284</div>
-          <div class="stat-label">Total Registered Workers</div>
-        </div>
+
         <div class="stat-card">
           <div class="stat-header">
             <div class="stat-icon yellow">⏳</div>
@@ -160,142 +151,29 @@
           <div class="stat-value">11</div>
           <div class="stat-label">Pending Approvals</div>
         </div>
+
         <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon green">🪙</div>
-            <span class="stat-delta up">+24%</span>
-          </div>
-          <div class="stat-value">₹48,200</div>
-          <div class="stat-label">Total Withdrawals This Month</div>
+          <div class="stat-header"><div class="stat-icon orange">👷</div><span class="stat-delta up">+18%</span></div>
+          <div class="stat-value">1,284</div>
+          <div class="stat-label">Total Service Providers</div>
         </div>
-        <!-- <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon blue">🌟</div>
-            <span class="stat-delta up">+3%</span>
-          </div>
-          <div class="stat-value">4.8</div>
-          <div class="stat-label">Avg. Worker Rating</div>
-        </div> -->
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon green">✅</div><span class="stat-delta up">+22%</span></div>
+          <div class="stat-value">956</div>
+          <div class="stat-label">Total Service Receivers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon blue">📋</div><span class="stat-delta up">+11%</span></div>
+          <div class="stat-value">5,820</div>
+          <div class="stat-label">Total Bookings</div>
+        </div>
       </div>
 
-      <!-- Two-column section -->
-      <div class="grid-2">
-
-        <!-- Recent Registrations -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Recent Worker Registrations</span>
-            <button class="btn btn-ghost btn-sm"
-              onclick="showPage('verification', document.querySelector('[onclick*=verification]'))">
-              View all →
-            </button>
-          </div>
-          <table>
-            <thead>
-              <tr><th>Worker</th><th>Service</th><th>Status</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="user-cell">
-                    <div class="avatar">R</div>
-                    <div>
-                      <div class="user-name">Ravi Kumar</div>
-                      <div class="user-phone">+91 9876501234</div>
-                    </div>
-                  </div>
-                </td>
-                <td>🧹 Cleaning</td>
-                <td><span class="badge badge-pending">Pending</span></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="user-cell">
-                    <div class="avatar">P</div>
-                    <div>
-                      <div class="user-name">Priya Devi</div>
-                      <div class="user-phone">+91 9845612345</div>
-                    </div>
-                  </div>
-                </td>
-                <td>🔧 Plumbing</td>
-                <td><span class="badge badge-approved">Approved</span></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="user-cell">
-                    <div class="avatar">M</div>
-                    <div>
-                      <div class="user-name">Mohan Singh</div>
-                      <div class="user-phone">+91 9712345678</div>
-                    </div>
-                  </div>
-                </td>
-                <td>⚡ Electrical</td>
-                <td><span class="badge badge-pending">Pending</span></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="user-cell">
-                    <div class="avatar">S</div>
-                    <div>
-                      <div class="user-name">Sunita Rao</div>
-                      <div class="user-phone">+91 9988776655</div>
-                    </div>
-                  </div>
-                </td>
-                <td>👶 Childcare</td>
-                <td><span class="badge badge-rejected">Rejected</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Activity Feed -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Recent Activity</span>
-          </div>
-          <div style="padding:16px 20px;">
-            <div class="activity-item">
-              <div class="activity-icon" style="background:var(--green-pale)">✅</div>
-              <div>
-                <div class="activity-text"><strong>Anjali Mehta</strong> was approved as a Cook</div>
-                <div class="activity-time">2 min ago</div>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-icon" style="background:var(--yellow-pale)">🪙</div>
-              <div>
-                <div class="activity-text">Withdrawal of <strong>₹850</strong> approved for Ramesh K.</div>
-                <div class="activity-time">15 min ago</div>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-icon" style="background:var(--blue-pale)">📝</div>
-              <div>
-                <div class="activity-text">Profile update pending for <strong>Suresh Gupta</strong></div>
-                <div class="activity-time">42 min ago</div>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-icon" style="background:var(--red-pale)">🚫</div>
-              <div>
-                <div class="activity-text"><strong>Vikram Sharma</strong> registration rejected (docs issue)</div>
-                <div class="activity-time">1 hr ago</div>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-icon" style="background:var(--orange-pale)">👤</div>
-              <div>
-                <div class="activity-text">New registration from <strong>Kavitha Nair</strong> (Cooking)</div>
-                <div class="activity-time">2 hrs ago</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /grid-2 -->
+      <!-- Service Category Breakdown -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Service Category Breakdown</span></div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:12px;" id="service-breakdown"></div>
+      </div>
 
       <!-- Registration Chart -->
       <div class="card">
@@ -513,49 +391,7 @@
     </div><!-- /page-seva-coins -->
 
 
-    <!-- ══════════════════════════════════
-         PAGE: ANALYTICS
-    ══════════════════════════════════ -->
-    <div class="page" id="page-analytics">
-
-      <!-- <div class="section-title" style="margin-bottom:4px">Analytics</div> -->
-      <div class="section-sub" style="margin-bottom:16px">Platform performance overview</div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-header"><div class="stat-icon orange">👷</div><span class="stat-delta up">+18%</span></div>
-          <div class="stat-value">1,284</div>
-          <div class="stat-label">Total Service Providers</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-header"><div class="stat-icon green">✅</div><span class="stat-delta up">+22%</span></div>
-          <div class="stat-value">956</div>
-          <div class="stat-label">Total Service Receivers</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-header"><div class="stat-icon blue">📋</div><span class="stat-delta up">+11%</span></div>
-          <div class="stat-value">5,820</div>
-          <div class="stat-label">Total Bookings</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-header"><div class="stat-icon yellow">💰</div><span class="stat-delta up">+31%</span></div>
-          <div class="stat-value">₹4.8L</div>
-          <div class="stat-label">Revenue (MoM)</div>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-header"><span class="card-title">Service Category Breakdown</span></div>
-          <div style="padding:20px;display:flex;flex-direction:column;gap:12px;" id="service-breakdown"></div>
-        </div>
-        <div class="card">
-          <div class="card-header"><span class="card-title">Approval Rate</span></div>
-          <div style="padding:20px;display:flex;flex-direction:column;gap:12px;" id="approval-stats"></div>
-        </div>
-      </div>
-
-    </div><!-- /page-analytics -->
+    
 
 
     <!-- ══════════════════════════════════
