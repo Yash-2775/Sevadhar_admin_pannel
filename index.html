@@ -300,20 +300,21 @@
 
       <div class="card">
         <div class="tabs" style="display:flex;gap:20px;border-bottom:1px solid var(--border);margin-bottom:16px;padding: 0 16px;">
-          <div class="tab active" style="padding-bottom:10px;cursor:pointer;border-bottom:2px solid var(--orange);color:var(--orange);font-weight:600;" onclick="switchUserTab('SP', this)">Service Providers (SP)</div>
-          <div class="tab" style="padding-bottom:10px;cursor:pointer;color:var(--text-secondary);" onclick="switchUserTab('SR', this)">Service Receivers (SR)</div>
+          <div class="tab active" style="padding-bottom:10px;cursor:pointer;border-bottom:2px solid var(--orange);color:var(--orange);font-weight:600;" onclick="switchUserTab('SP', this)">Service Provider</div>
+          <div class="tab" style="padding-bottom:10px;cursor:pointer;color:var(--text-secondary);" onclick="switchUserTab('SR', this)">Service Receiver</div>
         </div>
         <div class="filter-bar">
           <input class="filter-input" type="text"
                  placeholder="Search by phone number (login ID)…"
                  oninput="searchUsers(this.value)"
                  id="user-search">
-          <select class="filter-select" onchange="filterUsersByStatus(this.value)">
+          <select id="user-status-filter" class="filter-select" onchange="filterUsersByStatus(this.value)">
             <option value="">All</option>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </select>
-          <select class="filter-select" onchange="sortUsersByJoined(this.value)">
+          <select id="user-joined-filter" class="filter-select" onchange="sortUsersByJoined(this.value)">
+            <option value="">Sort by Joined</option>
             <option value="asc">Joined: Oldest First</option>
             <option value="desc">Joined: Newest First</option>
           </select>
@@ -322,8 +323,8 @@
           <table>
             <thead>
               <tr>
-                <th>Worker</th>
-                <th>Services</th>
+                <th id="manage-users-col-name">Worker</th>
+                <th id="manage-users-col-services">Services</th>
                 <th>Joined</th>
                 <th>Status</th>
                 <th>Coins</th>
@@ -378,8 +379,10 @@
             <thead>
               <tr>
                 <th>Worker</th>
-                <th>Coins Earned</th>
+                <th>Coins Applied</th>
                 <th>Amount</th>
+                <th>Coins Converted</th>
+                <th>Total Balance</th>
                 <th>UPI ID</th>
                 <th>Requested</th>
                 <th>Status</th>

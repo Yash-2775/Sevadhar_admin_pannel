@@ -7,7 +7,7 @@
 ───────────────────────────────────────── */
 
 const WORKERS = [
-  { id:1,  name:'Ravi Kumar',    phone:'+91 9876501234', services:['Cleaning','Plumbing'],      aadharFront:'🪪', aadharBack:'🪪', otp:true,  status:'Pending',  date:'2025-03-18', rating:null, coins:0,    joined:'Jan 2025', city:'Mumbai'    },
+  { id:1,  name:'Ravi Kumar',    phone:'+91 9876501234', services:['Cleaning','Plumbing'],      aadharFront:'🪪', aadharBack:'🪪', otp:true,  status:'Pending',  date:'2025-03-18', rating:null, coins:0,    joined:'Jan 2025', city:'Mumbai', socialLinks: [{platform:'LinkedIn', url:'https://linkedin.com/'}, {platform:'Instagram', url:'https://instagram.com/'}] },
   { id:2,  name:'Priya Devi',    phone:'+91 9845612345', services:['Plumbing'],                 aadharFront:'🪪', aadharBack:'🪪', otp:true,  status:'Approved', date:'2025-03-12', rating:4.8,  coins:1240, joined:'Feb 2025', city:'Pune'      },
   { id:3,  name:'Mohan Singh',   phone:'+91 9712345678', services:['Electrical'],               aadharFront:'🪪', aadharBack:'🪪', otp:true,  status:'Pending',  date:'2025-03-19', rating:null, coins:0,    joined:'Mar 2025', city:'Nashik'    },
   { id:4,  name:'Sunita Rao',    phone:'+91 9988776655', services:['Childcare','Cooking'],      aadharFront:'🪪', aadharBack:'🪪', otp:false, status:'Rejected', date:'2025-03-10', rating:null, coins:0,    joined:'Jan 2025', city:'Mumbai'    },
@@ -36,6 +36,8 @@ const COINS_REQUESTS = [
   { id:5, workerId:8, name:'Ramesh Kumar', phone:'+91 9811234567', coins:800,  amount:400,  upi:'ramesh.k@okhdfc',    date:'2025-03-10', requestedAt:'2025-03-10T08:20:00', status:'Rejected' },
   { id:6, workerId:2, name:'Priya Devi',   phone:'+91 9845612345', coins:500,  amount:250,  upi:'priya.devi@okaxis',  date:'2025-03-22', requestedAt:'2025-03-22T10:10:00', status:'Pending'  },
   { id:7, workerId:5, name:'Kavitha Nair', phone:'+91 9965432100', coins:400,  amount:200,  upi:'kavitha.n@ybl',      date:'2025-03-21', requestedAt:'2025-03-21T13:55:00', status:'Pending'  },
+  { id:8, workerId:11, name:'Anita Verma', phone:'+91 9123456780', coins:600, amount:300, upi:'anita.v@okicici', date:'2025-03-23',  requestedAt:'2025-03-23T11:00:00', status:'Pending' },
+  { id:9, workerId:12, name:'Rajesh Joshi', phone:'+91 9988112233', coins:1000, amount:500, upi:'rajesh.j@okhdfc', date:'2025-03-22', requestedAt:'2025-03-22T09:15:00', status:'Approved' }
 ];
 
 const NOTIFICATIONS = [
@@ -137,6 +139,22 @@ function switchUserTab(type, el) {
   el.style.color = 'var(--orange)';
   el.style.fontWeight = '600';
   
+  const colName = document.getElementById('manage-users-col-name');
+  const statusFilter = document.getElementById('user-status-filter');
+  const joinedFilter = document.getElementById('user-joined-filter');
+  const colServices = document.getElementById('manage-users-col-services');
+  if (type === 'SR') {
+    if (colName) colName.textContent = 'User';
+    if (statusFilter) statusFilter.style.display = 'none';
+    if (joinedFilter) joinedFilter.style.display = 'none';
+    if (colServices) colServices.style.display = 'none';
+  } else {
+    if (colName) colName.textContent = 'Worker';
+    if (statusFilter) statusFilter.style.display = 'inline-block';
+    if (joinedFilter) joinedFilter.style.display = 'inline-block';
+    if (colServices) colServices.style.display = '';
+  }
+
   // Re-render users
   sortUsersByJoined(userSortOrder);
 }
@@ -329,7 +347,7 @@ function renderUsers(data) {
             </div>
           </div>
         </td>
-        <td>${w.services.map(s => `<span class="service-tag" style="font-size:11px">${s}</span>`).join('')}</td>
+        <td style="${userTabType === 'SR' ? 'display:none;' : ''}">${w.services.map(s => `<span class="service-tag" style="font-size:11px">${s}</span>`).join('')}</td>
         <td style="color:var(--text-muted);font-size:12px">${w.joined}</td>
         <td>${statusBadge(displayStatus)}</td>
         <td>
@@ -361,6 +379,11 @@ function renderCoins() {
 
   tbody.innerHTML = coinsData.map(c => {
     const requested = formatDateTime12hr(c.requestedAt || c.date);
+    const user = WORKERS.find(w => w.id === c.workerId) || { coins: 0, type: 'SP' };
+    const totalConvertedCoins = coinsData.filter(req => req.workerId === c.workerId && req.status === 'Approved').reduce((acc, req) => acc + req.coins, 0);
+    const totalBalance = user.coins;
+    const userTypeStr = (user.type || 'SP') === 'SP' ? 'SP' : 'SR';
+    
     return `
     <tr>
       <td>
@@ -369,11 +392,14 @@ function renderCoins() {
           <div>
             <div class="user-name">${c.name}</div>
             <div class="user-phone">${c.phone}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${userTypeStr}</div>
           </div>
         </div>
       </td>
       <td><span class="coins-amount">${c.coins} 🪙</span></td>
       <td><strong>₹${c.amount}</strong></td>
+      <td><span class="coins-amount" style="color:var(--green)">${totalConvertedCoins} 🪙</span></td>
+      <td><span class="coins-amount">${totalBalance} 🪙</span></td>
       <td><span class="upi-id">${c.upi}</span></td>
       <td style="color:var(--text-muted);font-size:12px">${requested}</td>
       <td>${statusBadge(c.status)}</td>
@@ -543,6 +569,13 @@ function openWorkerModal(id) {
     <div class="profile-section">Work Gallery</div>
     <div style="display:flex;gap:10px;margin-bottom:20px;">
       ${galleryHtml}
+    </div>
+
+    <div class="profile-section">Social Media</div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;">
+      ${w.socialLinks && w.socialLinks.length > 0 
+        ? w.socialLinks.map(s => `<a href="${s.url}" target="_blank" style="text-decoration:none;color:var(--blue);display:inline-flex;align-items:center;padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:13px;background:var(--gray-light)">🔗 ${s.platform}</a>`).join('')
+        : '<span style="color:var(--text-muted);font-size:13px;">No social media links provided.</span>'}
     </div>
 
     <div class="profile-section">Aadhaar Documents</div>
