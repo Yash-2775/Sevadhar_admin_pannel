@@ -17,6 +17,8 @@ const WORKERS = [
   { id:8,  name:'Ramesh Kumar',  phone:'+91 9811234567', services:['AC Repair'],                aadharFront:'🪪', aadharBack:'🪪', otp:true,  status:'Approved', date:'2025-02-28', rating:4.6,  coins:5400, joined:'Nov 2024', city:'Nashik'    },
   { id:9,  name:'Deepa Sharma',  phone:'+91 9900112233', services:['Childcare'],                aadharFront:'🪪', aadharBack:'🪪', otp:true,  status:'Pending',  date:'2025-03-22', rating:null, coins:0,    joined:'Mar 2025', city:'Aurangabad'},
   { id:10, name:'Vikram Singh',  phone:'+91 9832100000', services:['Plumbing','Electrical'],    aadharFront:'🪪', aadharBack:'🪪', otp:true,  status:'Rejected', date:'2025-03-08', rating:null, coins:0,    joined:'Feb 2025', city:'Pune'      },
+  { id:11, name:'Anita Verma',   phone:'+91 9123456780', services:[],                           aadharFront:'🪪', aadharBack:'🪪', otp:true,  status:'Approved', date:'2025-03-01', rating:null, coins:0,    joined:'Jan 2025', city:'Mumbai', type:'SR' },
+  { id:12, name:'Rajesh Joshi',  phone:'+91 9988112233', services:[],                           aadharFront:'🪪', aadharBack:'🪪', otp:true,  status:'Approved', date:'2025-02-15', rating:null, coins:0,    joined:'Feb 2025', city:'Pune',   type:'SR' }
 ];
 
 const PROFILE_UPDATES = [
@@ -54,6 +56,7 @@ let workerData  = [...WORKERS];
 let profileData = [...PROFILE_UPDATES];
 let coinsData   = [...COINS_REQUESTS];
 let userSortOrder = ''; // 'asc' or 'desc' for joined date
+let userTabType = 'SP'; // Active user tab state logic
 
 /* ─────────────────────────────────────────
    AUTHENTICATION
@@ -119,6 +122,24 @@ function showPage(id, el) {
 /* ─────────────────────────────────────────
    HELPERS
 ───────────────────────────────────────── */
+
+function switchUserTab(type, el) {
+  userTabType = type;
+  const tabs = el.parentElement.querySelectorAll('.tab');
+  tabs.forEach(t => {
+    t.classList.remove('active');
+    t.style.borderBottom = 'none';
+    t.style.color = 'var(--text-secondary)';
+    t.style.fontWeight = 'normal';
+  });
+  el.classList.add('active');
+  el.style.borderBottom = '2px solid var(--orange)';
+  el.style.color = 'var(--orange)';
+  el.style.fontWeight = '600';
+  
+  // Re-render users
+  sortUsersByJoined(userSortOrder);
+}
 
 /** Return a coloured badge HTML string for a given status. */
 function statusBadge(status) {
@@ -272,8 +293,10 @@ function viewProfilePhoto(type, approvalId) {
 ───────────────────────────────────────── */
 
 function renderUsers(data) {
+  let filteredData = data.filter(w => (w.type || 'SP') === userTabType);
+
   // Apply sorting if set
-  let sortedData = [...data];
+  let sortedData = [...filteredData];
   if (userSortOrder) {
     sortedData.sort((a, b) => {
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -318,6 +341,8 @@ function renderUsers(data) {
           <div style="display:flex;gap:6px;flex-wrap:wrap">
             <button class="btn btn-sm" style="background:var(--blue-pale);color:var(--blue);border:none"
               onclick="openWorkerModal(${w.id})">Edit</button>
+            <button class="btn btn-sm" style="background:var(--green-pale);color:var(--green);border:none"
+              onclick="shareUserProfile(${w.id})">Share</button>
             <button class="btn btn-yellow btn-sm" onclick="toggleUser(${w.id})">Deactivate</button>
             <button class="btn btn-red    btn-sm" onclick="deleteUser(${w.id})">Delete</button>
           </div>
@@ -486,21 +511,39 @@ function openWorkerModal(id) {
 
   document.getElementById('modal-worker-name').textContent = w.name;
 
+  const profilePhoto = w.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(w.name)}&background=random&size=80`;
+  const bio = w.bio || `Experienced ${w.services[0] ? w.services[0].toLowerCase() : 'service'} professional committed to high-quality work and reliable service.`;
+  const galleryHtml = (w.gallery || [1,2,3]).map(g => `<img src="https://via.placeholder.com/60?text=Work+${g}" style="border-radius:6px;width:60px;height:60px;object-fit:cover;">`).join('');
+  const socialLinks = w.socialUrl ? `<a href="${w.socialUrl}" target="_blank" style="color:var(--blue);text-decoration:none;">View Profile</a>` : '<span style="color:var(--text-muted)">Not provided</span>';
+
   document.getElementById('modal-worker-body').innerHTML = `
+    <div style="display:flex;gap:16px;margin-bottom:20px;align-items:center;">
+      <img src="${profilePhoto}" alt="${w.name}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--border);">
+      <div>
+        <div style="font-size:18px;font-weight:600;">${w.name}</div>
+        <div style="color:var(--text-secondary);font-size:13px;margin-top:4px;">${bio}</div>
+        <div style="margin-top:6px;font-size:13px;">Social: ${socialLinks}</div>
+      </div>
+    </div>
+
     <div class="profile-section">Personal Information</div>
     <div class="profile-grid">
       <div class="profile-field"><div class="profile-label">Full Name</div>         <div class="profile-value">${w.name}</div></div>
       <div class="profile-field"><div class="profile-label">Phone (Login ID)</div>  <div class="profile-value">${w.phone}</div></div>
       <div class="profile-field"><div class="profile-label">City</div>              <div class="profile-value">${w.city}</div></div>
       <div class="profile-field"><div class="profile-label">Joined</div>            <div class="profile-value">${w.joined}</div></div>
-      <!-- <div class="profile-field"><div class="profile-label">OTP Verified</div>      <div class="profile-value">${w.otp ? '✅ Yes' : '❌ No'}</div></div> -->
       <div class="profile-field"><div class="profile-label">Rating</div>            <div class="profile-value">${w.rating ? '⭐ ' + w.rating : '—'}</div></div>
       <div class="profile-field"><div class="profile-label">Seva Coins</div>        <div class="profile-value">🪙 ${w.coins}</div></div>
       <div class="profile-field"><div class="profile-label">Status</div>            <div class="profile-value">${statusBadge(w.status)}</div></div>
     </div>
 
     <div class="profile-section">Services Offered</div>
-    <div>${w.services.map(s => `<span class="service-tag">${s}</span>`).join('')}</div>
+    <div style="margin-bottom:20px;">${w.services.map(s => `<span class="service-tag">${s}</span>`).join('')}</div>
+
+    <div class="profile-section">Work Gallery</div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;">
+      ${galleryHtml}
+    </div>
 
     <div class="profile-section">Aadhaar Documents</div>
     <div class="grid-2">
@@ -518,8 +561,8 @@ function openWorkerModal(id) {
   document.getElementById('modal-worker-footer').innerHTML = w.status === 'Pending'
     ? `
       <button class="btn btn-ghost" onclick="closeModal('worker-modal')">Cancel</button>
-      <button class="btn btn-red"   onclick="updateWorkerStatus(${w.id},'Rejected');closeModal('worker-modal')">Reject</button>
-      <button class="btn btn-green" onclick="updateWorkerStatus(${w.id},'Approved');closeModal('worker-modal')">✓ Approve Worker</button>
+      <button class="btn btn-red"   onclick="updateWorkerStatus(${w.id},'Rejected')">Reject</button>
+      <button class="btn btn-green" onclick="updateWorkerStatus(${w.id},'Approved')">✓ Approve Worker</button>
     `
     : `<button class="btn btn-orange" onclick="closeModal('worker-modal')">Close</button>`;
 
@@ -537,6 +580,11 @@ function openCoinsModal(id) {
   const c = coinsData.find(x => x.id === id);
   if (!c) return;
 
+  const user = WORKERS.find(w => w.id === c.workerId) || { coins: 0 };
+  const currentBalance = user.coins;
+  const totalConvertedCoins = coinsData.filter(req => req.workerId === c.workerId && req.status === 'Approved').reduce((acc, req) => acc + req.coins, 0);
+  const totalConvertedRupees = coinsData.filter(req => req.workerId === c.workerId && req.status === 'Approved').reduce((acc, req) => acc + req.amount, 0);
+
   document.getElementById('coins-modal-body').innerHTML = `
     <div style="background:var(--orange-pale);border-radius:12px;padding:20px;margin-bottom:20px;text-align:center">
       <div style="font-size:36px;font-weight:700;color:var(--orange);font-family:var(--font-display)">₹${c.amount}</div>
@@ -547,6 +595,8 @@ function openCoinsModal(id) {
       <div class="profile-field"><div class="profile-label">Phone</div>      <div class="profile-value">${c.phone}</div></div>
       <div class="profile-field"><div class="profile-label">UPI ID</div>     <div class="profile-value"><span class="upi-id">${c.upi}</span></div></div>
       <div class="profile-field"><div class="profile-label">Requested</div>  <div class="profile-value">${formatDateTime12hr(c.requestedAt || c.date)}</div></div>
+      <div class="profile-field"><div class="profile-label">Current Balance</div><div class="profile-value" style="font-weight:600">${currentBalance} 🪙</div></div>
+      <div class="profile-field"><div class="profile-label">Total Converted</div><div class="profile-value" style="color:var(--green)">₹${totalConvertedRupees} (${totalConvertedCoins} 🪙)</div></div>
       <div class="profile-field"><div class="profile-label">Status</div>     <div class="profile-value">${statusBadge(c.status)}</div></div>
     </div>
     ${c.status === 'Pending' ? `
@@ -586,11 +636,18 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 function updateWorkerStatus(id, status) {
   const w = WORKERS.find(x => x.id === id);
   if (!w) return;
+
+  const action = status === 'Approved' ? 'approve' : 'reject';
+  if (!confirm(`Are you sure you want to ${action} ${w.name}'s profile?`)) {
+    return;
+  }
+
   w.status = status;
   workerData = [...WORKERS];
   renderVerification(workerData);
   renderUsers(WORKERS);
   showToast(`${w.name} has been ${status.toLowerCase()}`, status === 'Approved' ? 'success' : 'error');
+  closeModal('worker-modal');
 }
 
 /* ─────────────────────────────────────────
@@ -625,15 +682,85 @@ function rejectCoins(id) {
    ACTIONS — MANAGE USERS
 ───────────────────────────────────────── */
 
+function shareUserProfile(id) {
+  const w = WORKERS.find(x => x.id === id);
+  if (!w) return;
+  const link = `${window.location.origin}/worker-profile/${w.id}`;
+  navigator.clipboard.writeText(link).then(() => {
+    showToast(`Profile link for ${w.name} copied!`, 'success');
+  }).catch(err => {
+    prompt('Copy this link:', link);
+  });
+}
+
+let actionContext = null;
+
+function openReasonModal(action, userId) {
+  const w = WORKERS.find(x => x.id === userId);
+  if (!w) return;
+  actionContext = { action, userId, workerName: w.name };
+  
+  document.getElementById('reason-modal-title').textContent = action === 'deactivate' ? 'Deactivate User' : 'Delete User';
+  document.getElementById('reason-modal-desc').textContent = `Please select reasons for ${action === 'deactivate' ? 'deactivating' : 'deleting'} ${w.name}:`;
+  
+  document.querySelectorAll('.reason-cb').forEach(cb => cb.checked = false);
+  document.getElementById('reason-custom-msg').value = '';
+  document.getElementById('reason-error').style.display = 'none';
+  
+  document.getElementById('reason-modal-footer').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal('reason-modal')">Cancel</button>
+    <button class="btn ${action === 'deactivate' ? 'btn-yellow' : 'btn-red'}" onclick="confirmReasonAction()">Confirm ${action === 'deactivate' ? 'Deactivate' : 'Delete'}</button>
+  `;
+  
+  openModal('reason-modal');
+}
+
+function confirmReasonAction() {
+  const selectedCBs = Array.from(document.querySelectorAll('.reason-cb:checked'));
+  if (selectedCBs.length === 0) {
+    document.getElementById('reason-error').style.display = 'block';
+    return;
+  }
+  document.getElementById('reason-error').style.display = 'none';
+  
+  const reasons = selectedCBs.map(cb => cb.value);
+  const customMsg = document.getElementById('reason-custom-msg').value.trim();
+  
+  const { action, userId, workerName } = actionContext;
+  
+  if (action === 'deactivate') {
+    const w = WORKERS.find(x => x.id === userId);
+    if(w) w.status = 'Rejected'; // Assuming 'Rejected' translates to 'Inactive' visually
+  } else if (action === 'delete') {
+    const idx = WORKERS.findIndex(x => x.id === userId);
+    if(idx !== -1) WORKERS.splice(idx, 1);
+  }
+  
+  closeModal('reason-modal');
+  sortUsersByJoined(userSortOrder);
+  
+  const rationale = reasons.join(', ');
+  const msgPart = customMsg ? ` – ${customMsg}` : '';
+  const notifText = `Your profile was ${action}d because ${rationale}${msgPart}`;
+  
+  NOTIFICATIONS.unshift({
+    id: Date.now(),
+    type: 'profile',
+    workerId: userId,
+    text: `User Notified: ${workerName} – "${notifText}"`,
+    time: 'Just now',
+    unread: true
+  });
+  renderNotifications();
+  showToast(`Successfully ${action}d ${workerName}`, 'success');
+}
+
 function toggleUser(id) {
-  showToast('User account deactivated', 'info');
+  openReasonModal('deactivate', id);
 }
 
 function deleteUser(id) {
-  const w = WORKERS.find(x => x.id === id);
-  if (w && confirm(`Delete ${w.name}'s account permanently?`)) {
-    showToast(`${w.name} deleted`, 'error');
-  }
+  openReasonModal('delete', id);
 }
 
 /* ─────────────────────────────────────────

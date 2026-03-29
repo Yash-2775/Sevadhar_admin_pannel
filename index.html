@@ -149,7 +149,7 @@
             <span class="stat-delta up">+8</span>
           </div>
           <div class="stat-value">11</div>
-          <div class="stat-label">Pending Approvals</div>
+          <div class="stat-label">Total Hits</div>
         </div>
 
         <div class="stat-card">
@@ -165,7 +165,7 @@
         <div class="stat-card">
           <div class="stat-header"><div class="stat-icon blue">📋</div><span class="stat-delta up">+11%</span></div>
           <div class="stat-value">5,820</div>
-          <div class="stat-label">Total Bookings</div>
+          <div class="stat-label">Total Calls</div>
         </div>
       </div>
 
@@ -299,6 +299,10 @@
       </div>
 
       <div class="card">
+        <div class="tabs" style="display:flex;gap:20px;border-bottom:1px solid var(--border);margin-bottom:16px;padding: 0 16px;">
+          <div class="tab active" style="padding-bottom:10px;cursor:pointer;border-bottom:2px solid var(--orange);color:var(--orange);font-weight:600;" onclick="switchUserTab('SP', this)">Service Providers (SP)</div>
+          <div class="tab" style="padding-bottom:10px;cursor:pointer;color:var(--text-secondary);" onclick="switchUserTab('SR', this)">Service Receivers (SR)</div>
+        </div>
         <div class="filter-bar">
           <input class="filter-input" type="text"
                  placeholder="Search by phone number (login ID)…"
@@ -310,7 +314,6 @@
             <option value="Inactive">Inactive</option>
           </select>
           <select class="filter-select" onchange="sortUsersByJoined(this.value)">
-            <option value="">Sort by Joined</option>
             <option value="asc">Joined: Oldest First</option>
             <option value="desc">Joined: Newest First</option>
           </select>
@@ -459,6 +462,31 @@
     </div>
     <div class="modal-body"   id="coins-modal-body"></div>
     <div class="modal-footer" id="coins-modal-footer"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     MODAL: REASON POPUP (DEACTIVATE/DELETE)
+════════════════════════════════════════ -->
+<div class="modal-overlay" id="reason-modal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <div class="modal-title" id="reason-modal-title">Confirm Action</div>
+      <button class="modal-close" onclick="closeModal('reason-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom:12px;font-size:14px;color:var(--text-secondary);" id="reason-modal-desc"></p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;"><input type="checkbox" class="reason-cb" value="Violation of terms"> Violation of terms</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;"><input type="checkbox" class="reason-cb" value="Inappropriate behavior"> Inappropriate behavior</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;"><input type="checkbox" class="reason-cb" value="Fraudulent activity"> Fraudulent activity</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;"><input type="checkbox" class="reason-cb" value="Quality of service issues"> Quality of service issues</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;"><input type="checkbox" class="reason-cb" value="Other"> Other reasons</label>
+      </div>
+      <textarea id="reason-custom-msg" class="form-input" placeholder="Optional custom message..." style="min-height:80px;resize:vertical;"></textarea>
+      <div id="reason-error" style="color:var(--red);font-size:12px;display:none;margin-top:8px;">Please select at least one reason.</div>
+    </div>
+    <div class="modal-footer" id="reason-modal-footer"></div>
   </div>
 </div>
 
