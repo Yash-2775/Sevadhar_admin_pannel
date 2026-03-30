@@ -436,7 +436,26 @@
     <div class="modal-footer" id="modal-worker-footer"></div>
   </div>
 </div>
+<!-- APPROVAL CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal" style="max-width:420px;">
+    
+    <div class="modal-header">
+      <div class="modal-title" id="confirm-title">Confirm Action</div>
+      <button class="modal-close" onclick="closeModal('confirm-modal')">✕</button>
+    </div>
 
+    <div class="modal-body" id="confirm-body">
+      Are you sure?
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('confirm-modal')">Cancel</button>
+      <button class="btn btn-green" id="confirm-action-btn">Confirm</button>
+    </div>
+
+  </div>
+</div>
 <!-- ════════════════════════════════════════
      MODAL: PHOTO PREVIEW
 ════════════════════════════════════════ -->

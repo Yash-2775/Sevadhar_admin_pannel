@@ -667,13 +667,43 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
  * @param {string} status - 'Approved' | 'Rejected'
  */
 function updateWorkerStatus(id, status) {
-  const w = WORKERS.find(x => x.id === id);
-  if (!w) return;
+  const worker = WORKERS.find(w => w.id === id);
+  if (!worker) return;
 
-  const action = status === 'Approved' ? 'approve' : 'reject';
-  if (!confirm(`Are you sure you want to ${action} ${w.name}'s profile?`)) {
-    return;
-  }
+  const message = status === 'Approved'
+    ? `Are you sure you want to approve ${worker.name}'s profile?`
+    : `Are you sure you want to reject ${worker.name}'s profile?`;
+
+  document.getElementById('confirm-title').textContent =
+    status === 'Approved' ? 'Approve Worker' : 'Reject Worker';
+
+  document.getElementById('confirm-body').textContent = message;
+
+  const btn = document.getElementById('confirm-action-btn');
+
+  // Change button color dynamically
+  btn.className = status === 'Approved'
+    ? 'btn btn-green'
+    : 'btn btn-red';
+
+  btn.textContent = status === 'Approved' ? 'Approve' : 'Reject';
+
+  btn.onclick = () => {
+    worker.status = status;
+
+    renderVerification(workerData);
+    renderUsers(workerData);
+
+    closeModal('confirm-modal');
+  };
+
+  openModal('confirm-modal');
+}
+
+  // const action = status === 'Approved' ? 'approve' : 'reject';
+  // if (!confirm(`Are you sure you want to ${action} ${w.name}'s profile?`)) {
+  //   return;
+  // }
 
   w.status = status;
   workerData = [...WORKERS];
@@ -681,7 +711,7 @@ function updateWorkerStatus(id, status) {
   renderUsers(WORKERS);
   showToast(`${w.name} has been ${status.toLowerCase()}`, status === 'Approved' ? 'success' : 'error');
   closeModal('worker-modal');
-}
+
 
 /* ─────────────────────────────────────────
    ACTIONS — PROFILE APPROVALS
