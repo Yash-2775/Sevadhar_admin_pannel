@@ -700,31 +700,48 @@ function updateWorkerStatus(id, status) {
   openModal('confirm-modal');
 }
 
-  // const action = status === 'Approved' ? 'approve' : 'reject';
-  // if (!confirm(`Are you sure you want to ${action} ${w.name}'s profile?`)) {
-  //   return;
-  // }
-
-  w.status = status;
-  workerData = [...WORKERS];
-  renderVerification(workerData);
-  renderUsers(WORKERS);
-  showToast(`${w.name} has been ${status.toLowerCase()}`, status === 'Approved' ? 'success' : 'error');
-  closeModal('worker-modal');
-
 
 /* ─────────────────────────────────────────
    ACTIONS — PROFILE APPROVALS
 ───────────────────────────────────────── */
 
 function approveProfile(id) {
-  const p = profileData.find(x => x.id === id);
-  if (p) { p.status = 'Approved'; renderProfileApprovals(); showToast('Profile update approved', 'success'); }
+  updateProfileStatus(id, 'Approved');
 }
 
 function rejectProfile(id) {
+  updateProfileStatus(id, 'Rejected');
+}
+
+function updateProfileStatus(id, status) {
   const p = profileData.find(x => x.id === id);
-  if (p) { p.status = 'Rejected'; renderProfileApprovals(); showToast('Profile update rejected', 'error'); }
+  if (!p) return;
+
+  const message = status === 'Approved'
+    ? `Are you sure you want to approve ${p.workerName}'s profile update?`
+    : `Are you sure you want to reject ${p.workerName}'s profile update?`;
+
+  document.getElementById('confirm-title').textContent =
+    status === 'Approved' ? 'Approve Profile' : 'Reject Profile';
+
+  document.getElementById('confirm-body').textContent = message;
+
+  const btn = document.getElementById('confirm-action-btn');
+
+  btn.className = status === 'Approved'
+    ? 'btn btn-green'
+    : 'btn btn-red';
+
+  btn.textContent = status === 'Approved' ? 'Approve' : 'Reject';
+
+  btn.onclick = () => {
+    p.status = status;
+    renderProfileApprovals();
+    showToast(`Profile update ${status.toLowerCase()}`, status === 'Approved' ? 'success' : 'error');
+    closeModal('confirm-modal');
+  };
+
+  openModal('confirm-modal');
 }
 
 /* ─────────────────────────────────────────
